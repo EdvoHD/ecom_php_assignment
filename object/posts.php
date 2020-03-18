@@ -39,8 +39,26 @@ class Posts {
     }
 
     public function fetchAllPosts() {
-
         
+    }
+
+    public function addPost() {
+
+        $query_string = "INSERT INTO post (title, content) VALUES(:title_IN, :content_IN)";
+        $statementHandler = $this->database_handler->prepare($query_string);
+
+        if($statementHandler !== false) {
+
+            // funkarrr     
+
+
+        } else {
+            echo "Could not create database statement!";
+            die();
+        }
+        
+
+
     }
 
 }

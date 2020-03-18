@@ -39,6 +39,19 @@ class Posts {
     }
 
     public function fetchAllPosts() {
+
+        $query_string = "SELECT id, title, content, date_posted, user_id FROM post";
+        $statementHandler = $this->database_handler->prepare($query_string);
+
+        if($statementHandler !== false) {
+
+            $statementHandler->execute();
+            return $statementHandler->fetchAll();
+
+        } else {
+            echo "Could not create database statement!";
+            die();
+        }
         
     }
 

@@ -19,9 +19,25 @@ class Files {
 
     }
 
+    // Uppgift!
+    // --------------
+    // 1. Ladda upp filen till din $upload_folder folder.
+    // 2. Spara länken i databasen.
+    // 3. Returnera / Skriv ut sökvägen till filen.
+
     public function uploadFile($file) {
 
-        print_r($file);
+        $file_original_name     = $file['name'];
+        $file_type              = $file['type'];
+        $file_tmp_name          = $file['tmp_name'];
+        $file_errors            = $file['error'];
+        $file_size              = $file['size'];
+
+
+
+
+
+        return $file; // Returnera sökvägen.
 
     }
 

@@ -42,23 +42,28 @@ class Posts {
         
     }
 
-    public function addPost() {
+    public function addPost($title_param, $content_param) {
 
-        $query_string = "INSERT INTO post (title, content) VALUES(:title_IN, :content_IN)";
+        $query_string = "INSERT INTO post (title, content, user_id) VALUES(:title_IN, :content_IN, 1337)";
         $statementHandler = $this->database_handler->prepare($query_string);
 
         if($statementHandler !== false) {
 
-            // funkarrr     
+            $statementHandler->bindParam(":title_IN", $title_param);
+            $statementHandler->bindParam(":content_IN", $content_param);
+            
+            $success = $statementHandler->execute();
 
+            if($success === true) {
+                echo "OK!";
+            } else {
+                echo "Error while trying to insert post to database!";
+            }
 
         } else {
             echo "Could not create database statement!";
             die();
         }
-        
-
-
     }
 
 }

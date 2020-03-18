@@ -36,9 +36,11 @@ class Posts {
             echo "Could not create database statement!";
             die();
         }
+    }
 
+    public function fetchAllPosts() {
 
-
+        
     }
 
 }

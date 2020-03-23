@@ -4,7 +4,10 @@
 
     class User {
 
-       private $database_handler;
+        private $database_handler;
+        private $username;
+
+
        
        public function __construct($database_handler_parameter_IN)
        {
@@ -132,6 +135,109 @@
                 echo "Statementhandler epic fail!";
                 die;
             }
+        }
+
+
+
+        public function loginUser($username_parameter, $password_parameter) {
+            $return_object = new stdClass();
+
+            $query_string = "SELECT id, username, email FROM users WHERE username=:username_IN AND password=:password_IN";
+            $statementHandler = $this->database_handler->prepare($query_string);
+            
+            if($statementHandler !== false) {
+
+                $password = md5($password_parameter);
+
+                $statementHandler->bindParam(':username_IN', $username_parameter);
+                $statementHandler->bindParam(':password_IN', $password);
+
+                
+
+                $statementHandler->execute();
+                $return = $statementHandler->fetch();
+
+                if(!empty($return)) {
+
+                    $this->username = $return['username'];
+
+                   $return_object->token = $this->getToken($return['id'], $return['username']);
+                    return json_encode($return_object);
+                } else {
+                    echo "fel login";
+                }
+
+                
+
+            } else {
+                echo "Could not create a statementhandler";
+                die;
+            }
+
+        }
+
+        private function getToken($userID, $username) {
+
+            
+
+            $token = $this->checkToken($userID);
+
+            return $token;
+
+        }
+
+        private function checkToken($userID_IN) {
+
+            $query_string = "SELECT token, date_update FROM tokens WHERE user_id=:userID";
+            $statementHandler = $this->database_handler->prepare($query_string);
+
+            if($statementHandler !== false) {
+
+                    $statementHandler->bindParam(":userID", $userID_IN);
+                    $statementHandler->execute();
+                    $return = $statementHandler->fetch();
+
+                    if(!empty($return['token'])) {
+                        // token finns
+
+                        if($return['date_updated']) { // Om det är längre än en kvart sen den skapades.
+
+                        }
+
+                    } else {
+
+                        return $this->createToken($userID_IN);
+
+                    }
+
+            } else {
+                echo "Could not create a statementhandler";
+            }
+
+        }
+
+        private function createToken($user_id_parameter) {
+
+            $uniqToken = md5($this->username.uniqid('', true).time());
+
+            $query_string = "INSERT INTO tokens (user_id, token) VALUES(:userid, :token)";
+            $statementHandler = $this->database_handler->prepare($query_string);
+
+            if($statementHandler !== false) {
+
+                $statementHandler->bindParam(":userid", $user_id_parameter);
+                $statementHandler->bindParam(":token", $uniqToken);
+
+                $statementHandler->execute();
+
+                return $uniqToken;
+
+
+            } else {
+                return "Could not create a statementhandler";
+            }
+
+
         }
 
     

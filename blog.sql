@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Värd: localhost
--- Tid vid skapande: 19 mars 2020 kl 06:56
+-- Tid vid skapande: 23 mars 2020 kl 12:31
 -- Serverversion: 10.4.6-MariaDB
 -- PHP-version: 7.3.9
 
@@ -73,9 +73,16 @@ INSERT INTO `post` (`id`, `title`, `content`, `date_posted`, `user_id`) VALUES
 CREATE TABLE `tokens` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `date_updated` datetime NOT NULL DEFAULT current_timestamp(),
+  `date_updated` int(10) NOT NULL,
   `token` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumpning av Data i tabell `tokens`
+--
+
+INSERT INTO `tokens` (`id`, `user_id`, `date_updated`, `token`) VALUES
+(8, 2, 1584960370, 'b443e1b437004c122e64c5f85344e12d');
 
 -- --------------------------------------------------------
 
@@ -87,16 +94,15 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` text NOT NULL,
   `password` varchar(32) NOT NULL,
-  `email` text NOT NULL,
-  `token_id` int(11) DEFAULT NULL
+  `email` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumpning av Data i tabell `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `email`, `token_id`) VALUES
-(2, 'anders', 'dbbe002ab4b6277129f92f0ec354d128', 'anders@anders.se', NULL);
+INSERT INTO `users` (`id`, `username`, `password`, `email`) VALUES
+(2, 'anders', 'dbbe002ab4b6277129f92f0ec354d128', 'anders@anders.se');
 
 --
 -- Index för dumpade tabeller
@@ -146,7 +152,7 @@ ALTER TABLE `post`
 -- AUTO_INCREMENT för tabell `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT för tabell `users`

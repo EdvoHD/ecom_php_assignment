@@ -6,6 +6,7 @@
 
         private $database_handler;
         private $username;
+        private $token_validity_time = 15; // minutes
 
 
        
@@ -188,7 +189,7 @@
 
         private function checkToken($userID_IN) {
 
-            $query_string = "SELECT token, date_update FROM tokens WHERE user_id=:userID";
+            $query_string = "SELECT token, date_updated FROM tokens WHERE user_id=:userID";
             $statementHandler = $this->database_handler->prepare($query_string);
 
             if($statementHandler !== false) {
@@ -196,13 +197,28 @@
                     $statementHandler->bindParam(":userID", $userID_IN);
                     $statementHandler->execute();
                     $return = $statementHandler->fetch();
+                  
 
+                    
                     if(!empty($return['token'])) {
                         // token finns
 
-                        if($return['date_updated']) { // Om det är längre än en kvart sen den skapades.
+                        $token_timestamp = $return['date_updated'];
+                        $diff = time() - $token_timestamp;
+                        if($diff / 60 > $this->token_validity_time) {
 
+                            $query_string = "DELETE FROM tokens WHERE user_id=:userID";
+                            $statementHandler = $this->database_handler->prepare($query_string);
+
+                            $statementHandler->bindParam(':userID', $userID_IN);
+                            $statementHandler->execute();
+
+                            return $this->createToken($userID_IN);
+
+                        } else {
+                            return $return['token'];
                         }
+             
 
                     } else {
 
@@ -220,15 +236,18 @@
 
             $uniqToken = md5($this->username.uniqid('', true).time());
 
-            $query_string = "INSERT INTO tokens (user_id, token) VALUES(:userid, :token)";
+            $query_string = "INSERT INTO tokens (user_id, token, date_updated) VALUES(:userid, :token, :current_time)";
             $statementHandler = $this->database_handler->prepare($query_string);
 
             if($statementHandler !== false) {
 
+                $currentTime = time();
                 $statementHandler->bindParam(":userid", $user_id_parameter);
                 $statementHandler->bindParam(":token", $uniqToken);
+                $statementHandler->bindParam(":current_time", $currentTime, PDO::PARAM_INT);
 
                 $statementHandler->execute();
+              //  $statementHandler->debugDumpParams();
 
                 return $uniqToken;
 
@@ -241,7 +260,16 @@
         }
 
     
-    
+    public function validateToken($token) {
+
+        // 1. Validera parametern $token mot databasen.
+        // 2. returnera sant om den finns, falskt om den inte finns eller om den är inaktiv.
+
+
+
+        return true;
+
+    }
     
     
     }

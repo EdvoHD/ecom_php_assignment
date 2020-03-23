@@ -162,7 +162,7 @@
 
                     $this->username = $return['username'];
 
-                   $return_object->token = $this->getToken($return['id'], $return['username']);
+                    $return_object->token = $this->getToken($return['id'], $return['username']);
                     return json_encode($return_object);
                 } else {
                     echo "fel login";
@@ -178,8 +178,6 @@
         }
 
         private function getToken($userID, $username) {
-
-            
 
             $token = $this->checkToken($userID);
 
@@ -205,7 +203,7 @@
 
                         $token_timestamp = $return['date_updated'];
                         $diff = time() - $token_timestamp;
-                        if($diff / 60 > $this->token_validity_time) {
+                        if(($diff / 60) > $this->token_validity_time) {
 
                             $query_string = "DELETE FROM tokens WHERE user_id=:userID";
                             $statementHandler = $this->database_handler->prepare($query_string);
@@ -263,7 +261,8 @@
     public function validateToken($token) {
 
         // 1. Validera parametern $token mot databasen.
-        // 2. returnera sant om den finns, falskt om den inte finns eller om den är inaktiv.
+        // 2. Uppdatera date_updated vid check om den är aktiv.
+        // 3. returnera sant om den finns, falskt om den inte finns eller om den är inaktiv.
 
 
 

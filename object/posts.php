@@ -20,7 +20,7 @@ class Posts {
 
     public function fetchSinglePost() {
 
-        $query_string = "SELECT id, title, content, date_posted, user_id FROM post WHERE id=:post_id";
+        $query_string = "SELECT id, title, content, date_posted, user_id FROM posts WHERE id=:post_id";
         $statementHandler = $this->database_handler->prepare($query_string);
 
         if($statementHandler !== false) {
@@ -40,7 +40,7 @@ class Posts {
 
     public function fetchAllPosts() {
 
-        $query_string = "SELECT id, title, content, date_posted, user_id FROM post";
+        $query_string = "SELECT id, title, content, date_posted, user_id FROM posts";
         $statementHandler = $this->database_handler->prepare($query_string);
 
         if($statementHandler !== false) {
@@ -57,7 +57,7 @@ class Posts {
 
     public function addPost($title_param, $content_param) {
 
-        $query_string = "INSERT INTO post (title, content, user_id) VALUES(:title_IN, :content_IN, 1337)";
+        $query_string = "INSERT INTO posts (title, content, user_id) VALUES(:title_IN, :content_IN, 1337)";
         $statementHandler = $this->database_handler->prepare($query_string);
 
         if($statementHandler !== false) {
@@ -77,6 +77,44 @@ class Posts {
             echo "Could not create database statement!";
             die();
         }
+    }
+
+
+
+    public function updatePost($data) {
+
+
+        if(!empty($data['title'])) {
+            $query_string = "UPDATE posts SET title=:title WHERE id=:post_id";
+            $statementHandler = $this->database_handler->prepare($query_string);
+
+            $statementHandler->bindParam(":title", $data['title']);
+            $statementHandler->bindParam(":post_id", $data['id']);
+
+            $statementHandler->execute();
+            
+        }
+
+        if(!empty($data['content'])) {
+            $query_string = "UPDATE posts SET content=:content WHERE id=:post_id";
+            $statementHandler = $this->database_handler->prepare($query_string);
+
+            $statementHandler->bindParam(":content", $data['content']);
+            $statementHandler->bindParam(":post_id", $data['id']);
+
+            $statementHandler->execute();
+            
+        }
+
+        $query_string = "SELECT id, title, content, date_posted, user_id FROM posts WHERE id=:post_id";
+        $statementHandler = $this->database_handler->prepare($query_string);
+
+        $statementHandler->bindParam(":post_id", $data['id']);
+        $statementHandler->execute();
+
+        echo json_encode($statementHandler->fetch());
+
+
     }
 
 }

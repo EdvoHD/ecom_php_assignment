@@ -260,6 +260,47 @@
     
     public function validateToken($token) {
 
+        $query_string = "SELECT user_id, date_updated FROM tokens WHERE token=:token";
+        $statementHandler = $this->database_handler->prepare($query_string);
+
+        if($statementHandler !== false ){
+
+            $statementHandler->bindParam(":token", $token);
+            $statementHandler->execute();
+
+            $token_data = $statementHandler->fetch();
+
+            if(!empty($token_data['date_updated'])) {
+
+                $diff = time() - $token_data['date_updated'];
+
+                if( ($diff / 60) < $this->token_validity_time ) {
+
+                    $query_string = "UPDATE tokens SET date_updated=:updated_date WHERE token=:token";
+                    $statementHandler = $this->database_handler->prepare($query_string);
+                    
+                    $updatedDate = time();
+                    $statementHandler->bindParam(":updated_date", $updatedDate, PDO::PARAM_INT);
+                    $statementHandler->bindParam(":token", $token);
+
+                    $statementHandler->execute();
+
+                    return true;
+
+                } else {
+                    echo "Session closed due to inactivity<br />";
+                    return false;
+                }
+            } else {
+                echo "Could not find token, please login first<br />";
+                return false;
+            }
+
+        } else {
+            echo "Couldnt create statementhandler<br />";
+            return false;
+        }
+
         // 1. Validera parametern $token mot databasen.
         // 2. Uppdatera date_updated vid check om den är aktiv.
         // 3. returnera sant om den finns, falskt om den inte finns eller om den är inaktiv.
@@ -272,6 +313,3 @@
     
     
     }
-
-
-?>

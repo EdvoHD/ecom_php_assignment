@@ -5,8 +5,9 @@ include('../object/users.php');
 $posts_object = new Posts($databaseHandler);
 $user_handler = new User($databaseHandler);
 
+$token = $_POST['token'];
 
-if($user_handler->validateToken('b443e1b437004c122e64c5f85344e12d') === false) {
+if($user_handler->validateToken($token) === false) {
     echo "Invalid token!";
     die;
 }

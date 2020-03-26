@@ -5,7 +5,6 @@ $posts_object = new Posts($databaseHandler);
 $title_IN = ( isset($_GET['title']) ? $_GET['title'] : '' );
 $content_IN = ( isset($_GET['content']) ? $_GET['content'] : '' );
 
-
 if(!empty($title_IN)) {
     if(!empty($content_IN)) {
 

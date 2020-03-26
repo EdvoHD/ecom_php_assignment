@@ -4,7 +4,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "blog";
+$db = "ecom";
 
 // MAKE CONNECTION
 try {
